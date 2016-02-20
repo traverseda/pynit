@@ -9,6 +9,9 @@ As of this writing, it's not usable at all. Unless I forgot to remove this line.
 '''
 
 class registry(object):
+    '''
+    Register a service, so user can start/stop/restart them.
+    '''
     services={}
     def __init__(self, socketPath):
         ##Create some kind of rpc here. Probably capnproto, because I want to play with it.
@@ -22,6 +25,9 @@ class registry(object):
 
 class comment():
 #class connection(multiprocessing.connection):
+    '''
+    Some day this will give us more secure serialization then pickle.
+    '''
     def send(self, obj):
         """Send a (brine-able) object"""
         self._check_closed()
@@ -38,6 +44,9 @@ class comment():
         return load(buf.getbuffer())
 
 def cd(func,path):
+    '''
+    Change the working dir of a directory
+    '''
     path = os.path.expandvars(path)
     def func_wrapper(*args,**kwargs):
         os.chdir(path)
