@@ -1,19 +1,58 @@
 #Pynit
 
-Pynit is a small library for managing services.
+This started as some tools to help me run a bunch of python scripts
+that used rethinkdb as a sort of IPC. The idea was to have a "duck typed"
+database, where fields get automatically filled in by plugins if they're empty.
 
+You can see the start of that project [here](http://github.com/traverseda/feeds)
+
+Pynit is a small library for managing services.
 Some day you might be able to use it as an init system.
 
-I'd like to use it with xonsh.
+It pairs nicely with the [sh library](https://amoffat.github.io/sh/)
 
-An example of the sort of syntax we want.
+*Right now, very little works*
+
+Check the pynit.py file to see what works.
+An example of the sort of syntax we want. It is only an example.
+
 
 ```
+from pynit import *
+from sh import rethinkdb
 
 @run
 @background
+@log("/var/log/rethinkdb.log")
 @sudo("rethink")
-def rethinkDBservice():
-    rethinkdb &> /var/log/rethink  ##This uses xonsh to run rethinkdb.
+def rethinkDB_service():
+    rethinkdb()
 
 ```
+
+A more complicated example
+
+
+```
+
+from pynit import *
+from sh import sshd
+
+#Create a socket to control processes, controlled by root
+root = register("root")
+
+@run
+@register
+@restart
+@root("sshd")
+@background
+def sshd_service():
+    sshd()
+
+
+```
+
+One of the bigger challenges will be making these somewhat derterministic.
+
+That is, it should't matter too much what order you put the decorators on in.
+
