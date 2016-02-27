@@ -45,9 +45,8 @@ from sh import sshd
 root = register("root") #This socket will be owned by root
 
 @run
-@register
 @restart
-@root("sshd")
+@root.register("sshd")
 @background
 def sshd_service():
     sshd()
