@@ -14,7 +14,9 @@ It pairs nicely with the [sh library](https://amoffat.github.io/sh/)
 *Right now, very little works*
 
 Check the pynit.py file to see what works.
-An example of the sort of syntax we want. It is only an example.
+An example of the sort of syntax we want. 
+
+It is only an example, and much of the functionality still doesn't exist.
 
 
 ```
@@ -39,6 +41,7 @@ from pynit import *
 from sh import sshd
 
 #Create a socket to control processes, controlled by root
+#Enables commands like "pynit stop $Foo"
 root = register("root")
 
 @run
@@ -55,4 +58,5 @@ def sshd_service():
 One of the bigger challenges will be making these somewhat derterministic.
 
 That is, it should't matter too much what order you put the decorators on in.
+This is particularily problematic with the "restart" and "register" decorator.
 
