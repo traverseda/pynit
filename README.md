@@ -55,7 +55,7 @@ def sshd_service():
 
 ```
 
-A per-user config example. I use something pretty similar in my feeds project.
+A per-user config example. I use something pretty similar in my feeds project to load "plugins".
 
 ```
 #Pseudocode, unlikely to work.
