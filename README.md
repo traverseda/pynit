@@ -42,7 +42,7 @@ from sh import sshd
 
 #Create a socket to control processes, controlled by root
 #Enables commands like "pynit stop $Foo"
-root = register("root")
+root = register("root") #This socket will be owned by root
 
 @run
 @register
