@@ -55,6 +55,28 @@ def sshd_service():
 
 ```
 
+A per-user config example. I use something pretty similar in my feeds project.
+
+```
+#Pseudocode, unlikely to work.
+
+import pwd
+
+for user in  pwd.getpwall():
+    if user['shell'] != "/usr/bin/nologin":
+        @run
+        @background
+        @sudo(user['uuid'])
+        @cd(user['dir'])
+        def runUser():
+            try:
+                __import__(user['dir']+"/.pynit.py")
+            except ImportErrot:
+                pass
+
+
+```
+
 One of the bigger challenges will be making these somewhat derterministic.
 
 That is, it should't matter too much what order you put the decorators on in.
