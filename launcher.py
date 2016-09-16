@@ -1,5 +1,18 @@
+#!/bin/env python3
+
 """
 A launcher for a pynit service, that can be put in a bashrc.
+
+Your first run should be
+time python3 -OO launcher.py
+
+add it to your bashrc with
+nohup python3 launcher.py &
+
+It will make an ugly line in each new terminal, sorry.
+I should make it so it spawns a child, then exits properly.
+Then you could run it synchronously, since it's pretty fast.
+
 """
 
 serviceFile="~/.pynit.py"

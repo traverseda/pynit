@@ -1,6 +1,5 @@
-import multiprocessing, pwd, os, subprocess
+import multiprocessing, pwd, os, subprocess, sys, logging
 from functools import partial
-import logging
 #from unittest.mock import patch
 #from brine import dump,load 
 
@@ -50,21 +49,40 @@ def cd(path):
         return func_wrapper
     return decorator
 
+class StreamToLogger(object):
+   """
+   Fake file-like stream object that redirects writes to a logger instance.
+   Used to redirect a programs stdout/stderr to a log file
+   """
+   def __init__(self, logger, log_level=logging.INFO):
+      self.logger = logger
+      self.log_level = log_level
+      self.linebuf = ''
+ 
+   def write(self, buf):
+      for line in buf.rstrip().splitlines():
+         self.logger.log(self.log_level, line.rstrip())
+
 class Log():
     def collect(self):
         pass
 
-    def log(self, path):
+    def log(self, path, level="INFO", format='%(asctime)s %(levelname)s: %(message)s'):
         '''
         Log the output of a program.
         '''
+        newpath = os.path.expanduser(path)
+        logging.basicConfig(filename=newpath,level=level, format=format)
         def decorator(func):
             def func_wrapper(*args,**kwargs):
-                oldpath = os.getcwd()
-                newpath = os.path.expandvars(path)
-                os.chdir(newpath)
+                stdout_logger = logging.getLogger('STDOUT')
+                sl = StreamToLogger(stdout_logger, logging.INFO)
+                sys.stdout = sl
+                 
+                stderr_logger = logging.getLogger('STDERR')
+                sl = StreamToLogger(stderr_logger, logging.ERROR)
+                sys.stderr = sl
                 p = func(*args,**kwargs)
-                os.chdir(oldpath)
                 return p
             return func_wrapper
         return decorator
