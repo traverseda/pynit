@@ -20,9 +20,27 @@ import sh
 
 @run
 @background
-@cd(~/)
+@cd("~/")
 @log("~/.logs/rethinkdb.log")
 def runRethinkDB():
     sh.rethinkdb(_iter=True)
  
+```
+
+```python
+import schedule,time
+from pynit import *
+
+@background
+@cd("~/")
+@log("~/.logs/working.log")
+def job():
+    print("I'm working...")
+
+schedule.every(10).minutes.do(job().start)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
+
 ```

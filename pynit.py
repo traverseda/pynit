@@ -41,7 +41,7 @@ def cd(path):
     def decorator(func):
         def func_wrapper(*args,**kwargs):
             oldpath = os.getcwd()
-            newpath = os.path.expandvars(path)
+            newpath = os.path.expanduser(path)
             os.chdir(newpath)
             p = func(*args,**kwargs)
             os.chdir(oldpath)
