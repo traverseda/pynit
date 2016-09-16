@@ -1,5 +1,6 @@
 import multiprocessing, pwd, os, subprocess
 from functools import partial
+import logging
 #from unittest.mock import patch
 #from brine import dump,load 
 
@@ -7,7 +8,15 @@ from functools import partial
 Anything's an init system if you're brave enough!
 This is not intended to be used as a system init, but instead as a service manager for microservice based software and web servers like lighttpd.
 As of this writing, it's not usable at all. Unless I forgot to remove this line. If it actually has a release and is in pip it's probably fine.
+
+There are two types of things these decorators are designed to run on. Functions (which block) and Service objects (which are thin wrappers around
+multiprocessing.Process).
 '''
+
+class Service(multiprocessing.Process):
+    def __init__(self, *args, name="", **kwargs):
+        self.name=name
+        super().__init__(*args, **kwargs)
 
 def background(func):
    """
@@ -15,12 +24,14 @@ def background(func):
    Please note that there are probably ways to abuse this to run code in the parent.
    In the future, we need to get a serilization method that isn't "pickle" running, for security.
 
+   It returns a "Service" object, which right now is pretty much identical to a multiprocess.Process object
+
    TODO: Replace the built in pickle? serialization with something else. Maybe rpyc's brine.
    http://stackoverflow.com/a/13019405
    https://docs.python.org/2/library/multiprocessing.html#connection-objects
    """
    def func_wrapper(*args,**kwargs):
-       p = multiprocessing.Process(target = func, args=args, kwargs=kwargs)
+       p = Service(target = func, args=args, kwargs=kwargs, daemon = False)
        return p
    return func_wrapper
 
@@ -39,6 +50,25 @@ def cd(path):
         return func_wrapper
     return decorator
 
+class Log():
+    def collect(self):
+        pass
+
+    def log(self, path):
+        '''
+        Log the output of a program.
+        '''
+        def decorator(func):
+            def func_wrapper(*args,**kwargs):
+                oldpath = os.getcwd()
+                newpath = os.path.expandvars(path)
+                os.chdir(newpath)
+                p = func(*args,**kwargs)
+                os.chdir(oldpath)
+                return p
+            return func_wrapper
+        return decorator
+
 def sudo(user):
     """
     Run your function as the given user
@@ -56,7 +86,6 @@ def sudo(user):
             return p
         return func_wrapper
     return decorator
-
 
 def run(func):
    """
