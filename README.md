@@ -15,7 +15,7 @@ and the [schedule](https://github.com/dbader/schedule) library for cron-like
 behavior.
 
 ```python
-from pynit import *
+from pynit import run, background, cd, log
 import sh
 
 @run
@@ -29,7 +29,7 @@ def runRethinkDB():
 
 ```python
 import schedule,time
-from pynit import *
+from pynit import run, background, cd, log
 
 @background
 @cd("~/")
