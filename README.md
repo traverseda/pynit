@@ -14,7 +14,7 @@ It pairs nicely with the [sh library](https://amoffat.github.io/sh/)
 and the [schedule](https://github.com/dbader/schedule) library for cron-like
 behavior.
 
-```
+```python
 from pynit import *
 import sh
 
