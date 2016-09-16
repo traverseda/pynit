@@ -4,80 +4,25 @@ This started as some tools to help me run a bunch of python scripts
 that used rethinkdb as a sort of IPC. The idea was to have a "duck typed"
 database, where fields get automatically filled in by plugins if they're empty.
 
-You can see the start of that project [here](http://github.com/traverseda/feeds)
-
 Pynit is a small library for managing services.
 Some day you might be able to use it as an init system.
 
+Right now, the big disadvantage is that you can't dynamically reload services,
+and it doesn't automatically restart on changes.
+
 It pairs nicely with the [sh library](https://amoffat.github.io/sh/)
-
-*Right now, very little works*
-
-Check the pynit.py file to see what works.
-An example of the sort of syntax we want. 
-
-It is only an example, and much of the functionality still doesn't exist.
-
+and the [schedule](https://github.com/dbader/schedule) library for cron-like
+behavior.
 
 ```
 from pynit import *
-from sh import rethinkdb
+import sh
 
 @run
 @background
-@log("/var/log/rethinkdb.log")
-@sudo("rethink")
-def rethinkDB_service():
-    rethinkdb()
-
+@cd(~/)
+@log("~/.logs/rethinkdb.log")
+def runRethinkDB():
+    sh.rethinkdb(_iter=True)
+ 
 ```
-
-A more complicated example
-
-
-```
-
-from pynit import *
-from sh import sshd
-
-#Create a socket to control processes, controlled by root
-#Enables commands like "pynit stop $Foo"
-root = register("root") #This socket will be owned by root
-
-@run
-@restart
-@root.register("sshd")
-@background
-def sshd_service():
-    sshd()
-
-
-```
-
-A per-user config example. I use something pretty similar in my feeds project to load "plugins".
-
-```
-#Pseudocode, unlikely to work.
-
-import pwd
-
-for user in  pwd.getpwall():
-    if user['shell'] != "/usr/bin/nologin":
-        @run
-        @background
-        @sudo(user['uuid'])
-        @cd(user['dir'])
-        def runUser():
-            try:
-                __import__(user['dir']+"/.pynit.py")
-            except ImportErrot:
-                pass
-
-
-```
-
-One of the bigger challenges will be making these somewhat derterministic.
-
-That is, it should't matter too much what order you put the decorators on in.
-This is particularily problematic with the "restart" and "register" decorator.
-
