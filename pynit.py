@@ -63,31 +63,28 @@ class StreamToLogger(object):
       for line in buf.rstrip().splitlines():
          self.logger.log(self.log_level, line.rstrip())
 
-class Log():
-    def collect(self):
-        pass
-
-    def log(self, path, level="INFO", format='%(asctime)s %(levelname)s: %(message)s'):
-        '''
-        Log the output of a program.
-        '''
-        newpath = os.path.expanduser(path)
-        logging.basicConfig(filename=newpath,level=level, format=format)
-        def decorator(func):
-            def func_wrapper(*args,**kwargs):
-                stdout_logger = logging.getLogger('STDOUT')
-                sl = StreamToLogger(stdout_logger, logging.INFO)
-                sys.stdout = sl
-                 
-                stderr_logger = logging.getLogger('STDERR')
-                sl = StreamToLogger(stderr_logger, logging.ERROR)
-                sys.stderr = sl
-                p = func(*args,**kwargs)
-                return p
-            return func_wrapper
-        return decorator
+def log(path, level="INFO", format='%(asctime)s %(levelname)s: %(message)s'):
+    '''
+    Log the output of a program.
+    '''
+    newpath = os.path.expanduser(path)
+    logging.basicConfig(filename=newpath,level=level, format=format)
+    def decorator(func):
+        def func_wrapper(*args,**kwargs):
+            stdout_logger = logging.getLogger('STDOUT')
+            sl = StreamToLogger(stdout_logger, logging.INFO)
+            sys.stdout = sl
+             
+            stderr_logger = logging.getLogger('STDERR')
+            sl = StreamToLogger(stderr_logger, logging.ERROR)
+            sys.stderr = sl
+            p = func(*args,**kwargs)
+            return p
+        return func_wrapper
+    return decorator
 
 def sudo(user):
+    raise NotImplemented
     """
     Run your function as the given user
     Please note that this *permanently* changes user, you won't be able to change back unless you have
