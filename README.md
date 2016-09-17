@@ -19,7 +19,8 @@ import sh
 @cd("~/")
 @log("~/.logs/rethinkdb.log")
 def runRethinkDB():
-    sh.rethinkdb(_iter=True)
+    for line in sh.rethinkdb(_iter=True):
+        print(line)
  
 ```
 
