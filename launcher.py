@@ -46,4 +46,4 @@ if pid and not check_pid(pid):
 if not pid:
     print(serviceFile)
     open(pidFile, "w+").write(str(os.getpid()))
-    __import__(serviceFile)
+    eval(open(serviceFile,"r+").read())
